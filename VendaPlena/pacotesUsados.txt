@@ -1,0 +1,1 @@
+❯ dotnet add package Microsoft.Data.Sqlite // pacote instalado via terminal para permitir que tenhamos o uso do sqLite
