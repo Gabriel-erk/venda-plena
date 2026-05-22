@@ -1,2 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using VendinhaPlena.Database;
+
+var database = new DatabaseConfig();
+
+database.InicializarBanco();
+
+Console.WriteLine("Banco criado com sucesso!");
