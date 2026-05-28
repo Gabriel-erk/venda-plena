@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ajgzf8vEzeg=",
+  "dgSpecHash": "5omYGAFijS4=",
   "success": true,
   "projectFilePath": "/home/gevferreira/Documentos/dev/college-exercises/csharp-classes-2-year-2026/venda-plena/VendaPlena/VendaPlena.csproj",
   "expectedPackageFiles": [
@@ -10,7 +10,7 @@
     "/home/gevferreira/.nuget/packages/sqlitepclraw.core/2.1.11/sqlitepclraw.core.2.1.11.nupkg.sha512",
     "/home/gevferreira/.nuget/packages/sqlitepclraw.lib.e_sqlite3/2.1.11/sqlitepclraw.lib.e_sqlite3.2.1.11.nupkg.sha512",
     "/home/gevferreira/.nuget/packages/sqlitepclraw.provider.e_sqlite3/2.1.11/sqlitepclraw.provider.e_sqlite3.2.1.11.nupkg.sha512",
-    "/home/gevferreira/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.4/microsoft.aspnetcore.app.ref.10.0.4.nupkg.sha512"
+    "/home/gevferreira/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.8/microsoft.aspnetcore.app.ref.10.0.8.nupkg.sha512"
   ],
   "logs": []
 }
