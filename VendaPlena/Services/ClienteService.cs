@@ -106,9 +106,9 @@ public class ClienteService
     }
 
     public List<Cliente> Listar(
-        int page = 1,
-        int pageSize = 10,
-        string busca = ""
+        int page = 1, // número da página que, por padrão, vem na 1 (página 1: listagem dos clientes 1 a 10, página 2: listagem dos clientes 11 a 20, página 3: clientes 21 a 30....)
+        int pageSize = 10, // quantidade de registros por página, como por padrão aqui está 10, caso não seja passado nenhum valor diferente, será exibido por página, 10 clientes
+        string busca = "" // texto de pesquisa, onde por padrão vem vazio, mas caso tenha por ex: "Gabriel", ele retornará (usando valores já estipulados aqui por padrão) a página 1 (page = 1) e 10 clientes nessa página (pageSize = 10) 
     )
     {
         using var connection = database.GetConnection();
@@ -116,9 +116,19 @@ public class ClienteService
         connection.Open();
 
         var command = connection.CreateCommand();
-
+        // linha usada para paginaćão, realiza o calculo de quantos registros devem ser pulados antes de comećar a mostrar os resultados da página atual (página atual == valor do parâmetro page)
+        // utilizando os valores padrão dos parâmetros (1, 10, ""), vamos simular qual seria o valor de skip, (page - 1) == (1 - 1), que resulta em 0, depois multiplicamos por pageSize (em * pageSize), como sabemos, tudo que é multiplicado por 0, é 0, logo, o resultado de 0 * 10 == 0 que é == o valor de skip, logo, temos que pular um total de 0 registros para comećar a exibir os registros da página atual (page == 1)
+        // resumindo, pelo valor de skip ser 0, ele não pula nenhum registro e mostra os 10 primeiros clientes
         var skip = (page - 1) * pageSize;
 
+        // select escolhe quais colunas serão retornadas
+        // case == if, onde a condićão é: d.situaco == SituacaoDivida.Pendente (pois o valor de pendente no nosso enum == 0), logo, se a d.situacao do cliente atual estiver pendente, ele RETORNA o valor da dívida atual com: THEN d.valor (que resumindo, é o escopo do nosso if), SE NÃO, ou seja, se d.situacao != 0, significa que ela está paga, logo, ele retorna o valor 0 (pois o cliente não possui nenhuma dívida), com o ELSE 0 (lembrando que um cliente pode ter VÁRIAS dívidas, logo, essa situaćão que descrevemos, pode ser de um cliente que possui várias dívidas, onde algumas já foram pagas e outras não, então, graćas ao SUM, que vem antes do nosso case, ele vai SOMAR TODAS as dívidas de um único cliente)
+        // porém o retorno de SUM pode ser null em um caso onde um cliente não tenha nenhuma dívida pendente (fazendo com que seu retorno fosse, teoricamente, 0, porém SUM retorna um valor ou 0), logo, se repararmos bem, o SUM é apenas o PRIMEIRO parâmetro do método COALESCENCE, que possui um SEGUNDO parâmetro após o fechamento do nosso SUM, que é o valor: 0, pois como o método sum PODE retornar null, caso isso aconteća, graćas ao COALESCE que envolve o SUM, ele irá retornar 0 e não o NULL de SUM, assim garatindo que todo cliente TENHA um resultado
+        // LEFT JOIN == relaciona CLIENTES com dívidas (ele é importante pois mesmo clientes sem dívidas continuam aparecendo, e como o objetivo do método é listar, eu listo TODOS, sem excećão, eles tendo dívidas ou não)
+        // WHERE c.nome LIKE @busca == onde o campo nome da tabela clientes conter ALGUM caracter da "váriavel" @busca, faća um GROUP BY c.id == agrupa todas as dívidas do MESMO cliente (sem isso teria: GABRIEL(c.nome) 100(total_dividas), GABRIEL(c.nome) 200(total_dividas), GABRIEL(c.nome) 100(total_dividas) em linhas separadas, com isso seria: GABRIEL(c.nome) 400(total_dividas))
+        // ORDER BY total_dividas DESC == ordena do MAIOR para o MENOR (DESC == Decrescente, do maior para o menor)
+        // LIMIT @limit == quantidade de registros retornados == LIMIT pageSize (pois nossa váriavel pageSize guarda a quantidade de registros que iremos retornar)
+        // OFFSET @offset == quantidade de registros ignorados (quantidade de registros que devemos PULAR para o retorno dessa consulta SQL que estamos fazendo) == OFFSET skip (pois nossa váriavel skip guarda a quantidade de registros que devemos pular)
         command.CommandText =
         @"
             SELECT
